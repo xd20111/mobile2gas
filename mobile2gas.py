@@ -1,13 +1,40 @@
 from flask import Flask, request, jsonify
 import requests
 import json
+import os
 
 app = Flask(__name__)
 
-@app.route('/lpg-info', methods=['GET'])
+# API Key Authentication
+API_KEY = os.environ.get("API_KEY", "Mob2GAS-key_s0undw4v3")
+
+@app.route('/lpg-info', methods=['GET', 'POST'])
 def get_lpg_info():
-    # Get mobile number from query parameter
+    # Verify API key
+    key = request.args.get('key')
+    if not key and request.is_json:
+        try:
+            key = request.get_json().get('key')
+        except Exception:
+            pass
+    if not key:
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            key = auth_header.split(' ')[1]
+
+    if key != API_KEY:
+        return jsonify({
+            "error": "Unauthorized",
+            "message": "Invalid or missing API key"
+        }), 401
+
+    # Get mobile number
     mobile_no = request.args.get('mobile_no')
+    if not mobile_no and request.is_json:
+        try:
+            mobile_no = request.get_json().get('mobile_no')
+        except Exception:
+            pass
     
     if not mobile_no:
         return jsonify({
@@ -101,20 +128,7 @@ def get_lpg_info():
             "raw_response": response.text
         }), 500
 
-@app.route('/lpg-info', methods=['POST'])
-def get_lpg_info_post():
-    """Alternative POST endpoint if needed"""
-    data = request.get_json()
-    mobile_no = data.get('mobile_no') if data else None
-    
-    if not mobile_no:
-        return jsonify({
-            "error": "Mobile number is required",
-            "message": "Please provide mobile_no in request body"
-        }), 400
-    
-    # Reuse the same logic as GET endpoint
-    return get_lpg_info()
+# The POST route is consolidated into the main route above
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
