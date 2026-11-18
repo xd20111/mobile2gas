@@ -21,7 +21,10 @@ def index():
 def not_found(e):
     return jsonify({
         "error": "Not Found",
-        "message": "The requested URL was not found on the server.",
+        "requested_path": request.path,
+        "environ_path_info": request.environ.get("PATH_INFO"),
+        "x_matched_path": request.headers.get("x-matched-path"),
+        "all_headers": dict(request.headers),
         "available_endpoints": ["/", "/lpg-info"]
     }), 404
 
