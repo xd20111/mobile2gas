@@ -9,26 +9,12 @@ app = Flask(__name__)
 API_KEY = os.environ.get("API_KEY", "Mob2GAS-key_s0undw4v3")
 
 @app.route('/', methods=['GET'], strict_slashes=False)
-@app.route('/api/index', methods=['GET'], strict_slashes=False)
 def index():
     return jsonify({
-        "status": "online",
-        "service": "Mobile2GAS LPG Information API",
-        "endpoints": {
-            "/lpg-info": {
-                "methods": ["GET", "POST"],
-                "description": "Fetch LPG consumer information by mobile number",
-                "auth": "API key required via query param (?key=...), JSON body ({\"key\": \"...\"}), or Bearer token header",
-                "params": {
-                    "mobile_no": "10-digit registered mobile number (required)",
-                    "key": "API Key (required)"
-                },
-                "examples": {
-                    "get": "/lpg-info?mobile_no=98XXXXXXXX&key=" + API_KEY,
-                    "curl": "curl -X GET \"https://mobile2gas.vercel.app/lpg-info?mobile_no=98XXXXXXXX&key=" + API_KEY + "\""
-                }
-            }
-        }
+        "path": request.path,
+        "matched_path": request.headers.get("x-matched-path"),
+        "x_forwarded_uri": request.headers.get("x-forwarded-uri"),
+        "environ_path_info": request.environ.get("PATH_INFO")
     })
 
 @app.errorhandler(404)
