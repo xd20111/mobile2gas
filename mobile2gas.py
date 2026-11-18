@@ -8,7 +8,39 @@ app = Flask(__name__)
 # API Key Authentication
 API_KEY = os.environ.get("API_KEY", "Mob2GAS-key_s0undw4v3")
 
-@app.route('/lpg-info', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'], strict_slashes=False)
+@app.route('/api/index', methods=['GET'], strict_slashes=False)
+def index():
+    return jsonify({
+        "status": "online",
+        "service": "Mobile2GAS LPG Information API",
+        "endpoints": {
+            "/lpg-info": {
+                "methods": ["GET", "POST"],
+                "description": "Fetch LPG consumer information by mobile number",
+                "auth": "API key required via query param (?key=...), JSON body ({\"key\": \"...\"}), or Bearer token header",
+                "params": {
+                    "mobile_no": "10-digit registered mobile number (required)",
+                    "key": "API Key (required)"
+                },
+                "examples": {
+                    "get": "/lpg-info?mobile_no=98XXXXXXXX&key=" + API_KEY,
+                    "curl": "curl -X GET \"https://mobile2gas.vercel.app/lpg-info?mobile_no=98XXXXXXXX&key=" + API_KEY + "\""
+                }
+            }
+        }
+    })
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({
+        "error": "Not Found",
+        "message": "The requested URL was not found on the server.",
+        "available_endpoints": ["/", "/lpg-info"]
+    }), 404
+
+@app.route('/lpg-info', methods=['GET', 'POST'], strict_slashes=False)
+@app.route('/api/lpg-info', methods=['GET', 'POST'], strict_slashes=False)
 def get_lpg_info():
     # Verify API key
     key = request.args.get('key')
