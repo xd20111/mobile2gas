@@ -23,8 +23,8 @@ def index():
                     "key": "API Key (required)"
                 },
                 "examples": {
-                    "get": "/lpg-info?mobile_no=98XXXXXXXX&key=" + API_KEY,
-                    "curl": "curl -X GET \"https://mobile2gas.vercel.app/lpg-info?mobile_no=98XXXXXXXX&key=" + API_KEY + "\""
+                    "get": "/lpg-info?mobile_no=98XXXXXXXX&key=YOUR_API_KEY",
+                    "curl": "curl -X GET \"https://mobile2gas.vercel.app/lpg-info?mobile_no=98XXXXXXXX&key=YOUR_API_KEY\""
                 }
             }
         }
