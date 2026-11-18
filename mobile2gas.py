@@ -236,13 +236,13 @@ def get_lpg_info():
 
         # Check if the response is JSON (e.g. gateway error/status)
         try:
-            resp_json = response.json()
+            resp_json = json.loads(resp_text)
             return jsonify({
                 "status": "upstream_response",
                 "upstream_status_code": response.status_code,
                 "data": resp_json
             }), response.status_code
-        except json.JSONDecodeError:
+        except Exception:
             pass
 
         # If gateway returned the 3-part encrypted response
